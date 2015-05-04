@@ -22,7 +22,7 @@ galaxy_info:
   #
   platforms:
   - name: EL
-  #  versions:
+    versions:
   #  - all
   #  - 5
     - 6
