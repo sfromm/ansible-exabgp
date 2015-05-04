@@ -1,0 +1,41 @@
+---
+- include: setup-redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- name: install exabgp
+  pip: name=exabgp version={{ exabgp_version }} state=present
+
+- name: create exabgp config directory
+  file: |
+    path=/etc/exabgp
+    state=directory
+    owner=root
+    group=root
+    mode=0755
+
+- name: create path for pid file
+  file: |
+    path=/var/run/exabgp
+    state=directory
+    owner={{ exabgp_user }}
+    group={{ exabgp_group }}
+    mode=0755
+
+- name: template exabgp.env
+  template: src=exabgp.env.j2 dest=/etc/exabgp/exabgp.env
+  notify: restart exabgp
+
+- name: template exabgp.conf
+  template: src=exabgp.conf.j2 dest=/etc/exabgp/exabgp.conf
+  notify: reload exabgp
+
+- name: check for systemd
+  stat: path=/usr/bin/systemd
+  register: systemd
+
+- name: template init script
+  template: src=exabgp.init.j2 dest=/etc/init.d/exabgp mode=0755 owner=root group=root
+
+- name: enable and start exabgp
+  service: name=exabgp enabled=yes state=started
+  

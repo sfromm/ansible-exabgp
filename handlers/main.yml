@@ -1,0 +1,6 @@
+---
+- name: restart exabgp
+  command: service exabgp restart
+
+- name: reload exabgp
+  command: service exabgp reload

@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+# exabgp       Start up exabgp daemon
+#
+# chkconfig: 2345 95 5
+# description: exabgp is a utility to manage a network from commodity servers
+# processname: exabgp
+
+### BEGIN INIT INFO
+# Provides: exabgp
+# Required-Start: $syslog $network
+# Required-Stop: $syslog $network
+# Should-Start: $syslog
+# Should-Stop: $syslog
+# Short-Description: start and stop exabgp
+# Description: exabgp is a utility to manage a network from commodity servers
+### END INIT INFO
+
+# Source function library.
+. /etc/init.d/functions
+
+EXABGP_ENV=/etc/exabgp/exabgp.env
+EXABGP_CFG=/etc/exabgp/exabgp.conf
+PID_FILE="{{ exabgp_pid_file }}"
+
+# pull in sysconfig settings
+[ -f /etc/sysconfig/exabgp ] && . /etc/sysconfig/exabgp
+
+prog=exabgp
+lockfile=/var/lock/subsys/$prog
+
+configtest() {
+    env exabgp.daemon.daemonize=false \
+        $prog -e $EXABGP_ENV -t $EXABGP_CFG
+    RETVAL=$?
+    return $RETVAL
+}
+
+start() {
+    if ! configtest ; then
+        failure $"Configuration failed validation"
+        echo
+        exit 1
+    fi
+    echo -n $"Starting $prog: "
+    env exabgp.daemon.daemonize=true \
+        exabgp.daemon.pid=$PID_FILE \
+        $prog -e $EXABGP_ENV $EXABGP_CFG && \
+        success || failure
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch  $lockfile
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p $PID_FILE $prog
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f $lockfile $PID_FILE
+    echo
+}
+    
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    reload)
+        kill -USR1 `cat $PID_FILE`
+        ;;
+    status)
+        status -p $PID_FILE $prog
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        RETVAL=2
+esac
+exit $RETVAL

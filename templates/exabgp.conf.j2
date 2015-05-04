@@ -1,0 +1,50 @@
+# {{ ansible_managed }}
+{% for neighbor, nconfig in exabgp_neighbors.iteritems() %}
+neighbor {{ neighbor }} {
+{% for key, val in nconfig.iteritems() if key not in exabgp_config_subsections %}
+{%   if key in exabgp_section_booleans['neighbor'] %}
+{%     if val %}
+    {{ key }};
+{%     endif %}
+{%   else %}
+    {{ key }} {% if key == 'description' %}"{{ val }}"{% else %}{{ val }}{% endif %};
+{%   endif %}
+{% endfor %}
+
+{% if 'route' in nconfig or 'flow' in nconfig %}
+    static {
+{%   if 'route' in nconfig %}
+{%     for route, rconfig in nconfig['route'].iteritems() %}
+        route {{ route }} {
+{%       for  key, val in rconfig.iteritems() %}
+            {{ key }} {{ val }};
+{%       endfor %}
+        }
+{%     endfor %}
+{%   endif %}
+{%   if 'flow' in nconfig %}
+        flow {
+{%     for route, fconfig in nconfig['flow'].iteritems() %}
+            route {{ route }} {
+{%       for  key, val in rconfig.iteritems() %}
+            {{ key }} {{ val }};
+{%       endfor %}
+            }
+{%     endfor %}
+        }
+{%   endif %}
+    }
+{% endif %}
+ 
+{% for sub in exabgp_config_subsections %}
+{%   if sub in nconfig and sub != "route" and sub != "flow" %}
+    {{ sub }} {
+{%     for  key, val in nconfig[sub].iteritems() %}
+        {{ key }} {{ val }};
+{%     endfor %}
+    }
+{%   endif %}
+{% endfor %}
+
+}
+{% endfor %}
