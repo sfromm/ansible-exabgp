@@ -7,7 +7,7 @@ Role to deploy and manage
 Requirements
 ------------
 
-No external dependencies.
+The only requirement is *pip*.  This role will install *pip* if it is missing.
 
 Role Variables
 --------------
@@ -43,7 +43,7 @@ Role Variables
 Dependencies
 ------------
 
-The only requirement is *pip*.  This role will install *pip* if it is missing.
+No dependency on other roles.
 
 Example Playbook
 ----------------
