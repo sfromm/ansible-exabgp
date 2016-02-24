@@ -53,22 +53,6 @@ Role Variables
           description "EXAMPLE";
           peer-as 64513;
         }
-    - section: neighbor
-      name: 127.0.0.15
-      config: |-
-        local-as 64512;
-        local-address 127.0.0.1;
-        description "Example neighbor";
-        peer-as 64514;
-        hold-time 5;
-        static {
-          route 127.0.0.2 {
-            next-hop 127.0.0.3;
-          }
-        }
-        family {
-          inet unicast;
-        }
 ```
 
 Dependencies
@@ -83,18 +67,23 @@ Example:
 
     - hosts: bgp_servers
       vars:
-        exabgp_neighbors:
-          127.0.0.5:
-            local-address: 127.0.0.1
-            description: Example neighbor
-            local-as: 64512
-            peer-as: 64513
-            hold-time: 5
-            family:
-              inet: unicast
-            route:
-              127.0.0.2:
-                next-hop: 127.0.0.3
+        exabgp_conf:
+          - section: neighbor
+            name: 127.0.0.15
+            config: |-
+              local-as 64512;
+              local-address 127.0.0.1;
+              description "Example neighbor";
+              peer-as 64514;
+              hold-time 5;
+              static {
+                route 127.0.0.2 {
+                  next-hop 127.0.0.3;
+                }
+              }
+              family {
+                inet unicast;
+              }
       roles:
          - { role: sfromm.exabgp }
 
