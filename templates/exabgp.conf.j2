@@ -1,6 +1,6 @@
 # ansible_managed
 {% for conf in exabgp_conf %}
-{{ conf.section }} {% if name in conf %}{{ conf.name }}{% endif %} {
+{{ conf.section }} {% if 'name' in conf %}{{ conf.name }}{% endif %} {
 {{ conf.config }}
 }
 {% endfor %}
