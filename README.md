@@ -24,21 +24,52 @@ Role Variables
   configuration key that accepts a parameter.  This defaults to:
 ```
   exabgp_env:
-  exabgp.daemon:
-    daemonize: true
-    pid: "{{ exabgp_pid_file }}"
-  exabgp.log:
-    all: false
-    enable: true
-    destination: syslog
+    exabgp.daemon:
+      daemonize: true
+      pid: "{{ exabgp_pid_file }}"
+    exabgp.log:
+      all: false
+      enable: true
+      destination: syslog
 ```
-- **exabgp_neighbors**: This is a dictionary of dictionaries that
-  configures the neighbors for *exabgp*.  The key is the neighbor IP
-  address.  The configuration for the neighbor is then set as the key,
-  value pairs.  For those parameters that do not take a value,
-  eg. *passive*, treat them like a boolean.  Each subsection will
-  similarly be a dictionary of key/value pairs.
-
+- **exabgp_conf**: This is a list of configuration sections for
+  *exabgp.conf*.  Each element in the list is a dictionary with three
+  possible keys: *section* (such as *group*, *neighbor*, etc), *name*
+  (optional), and *config* that defines the actual configuration for
+  this section.  This defaults to an empty list.
+```
+  exabgp_conf:
+    - section: group
+      name: EXAMPLE
+      config: |-
+        local-as 64512;
+        local-address 127.0.0.1;
+        hold-time 180;
+        group-updates;
+        family {
+          ipv4 unicast;
+        }
+        neighbor 127.0.0.10 {
+          description "EXAMPLE";
+          peer-as 64513;
+        }
+    - section: neighbor
+      name: 127.0.0.15
+      config: |-
+        local-as 64512;
+        local-address 127.0.0.1;
+        description "Example neighbor";
+        peer-as 64514;
+        hold-time 5;
+        static {
+          route 127.0.0.2 {
+            next-hop 127.0.0.3;
+          }
+        }
+        family {
+          inet unicast;
+        }
+```
 
 Dependencies
 ------------

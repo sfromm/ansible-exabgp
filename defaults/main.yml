@@ -12,31 +12,4 @@ exabgp_env:
     all: false
     enable: true
     destination: syslog
-exabgp_neighbors:
-  127.0.0.5:
-    local-address: 127.0.0.1
-    description: Example neighbor
-    local-as: 64512
-    peer-as: 64513
-    hold-time: 5
-    family:
-      inet: unicast
-    route:
-      127.0.0.2:
-        next-hop: 127.0.0.3
-exabgp_section_booleans:
-  neighbor:
-    - passive
-    - ttl-security
-    - group-updates
-  route:
-    - atomic-aggregate
-    - withdraw
-exabgp_config_subsections:
-  - route
-  - flow
-  - l2vpn
-  - process
-  - family
-  - capability
-  - operational
+exabgp_conf: []
