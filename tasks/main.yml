@@ -45,4 +45,3 @@
 
 - name: enable and start exabgp
   service: name=exabgp enabled=yes state=started
-  
