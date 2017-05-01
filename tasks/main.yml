@@ -1,4 +1,8 @@
 ---
+- assert:
+    that:
+      - ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
 - include: setup-redhat.yml
   when: ansible_os_family == "RedHat"
 
