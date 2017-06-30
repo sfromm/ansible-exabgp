@@ -1,6 +1,13 @@
 ---
+- assert:
+    that:
+      - ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
 - include: setup-redhat.yml
   when: ansible_os_family == "RedHat"
+
+- include: setup-debian.yml
+  when: ansible_os_family == "Debian"
 
 - name: install exabgp
   pip: name=exabgp version={{ exabgp_version }} state=present
@@ -34,8 +41,7 @@
   register: systemd
 
 - name: template init script
-  template: src=exabgp.init.j2 dest=/etc/init.d/exabgp mode=0755 owner=root group=root
+  template: src=exabgp.init.{{ ansible_os_family }}.j2 dest=/etc/init.d/exabgp mode=0755 owner=root group=root
 
 - name: enable and start exabgp
   service: name=exabgp enabled=yes state=started
-  
